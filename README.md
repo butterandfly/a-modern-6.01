@@ -32,9 +32,9 @@ Python exercises on Exercism:
 - Exercism exercis: Leap
 
 ### Readings
-[PEP 20 – The Zen of Python | peps.python.org](https://peps.python.org/pep-0020/)
-[PEP 8 – Style Guide for Python Code | peps.python.org](https://peps.python.org/pep-0008/)
-[PEP 257 – Docstring Conventions | peps.python.org](https://peps.python.org/pep-0257/)
+- [PEP 20 – The Zen of Python | peps.python.org](https://peps.python.org/pep-0020/)
+- [PEP 8 – Style Guide for Python Code | peps.python.org](https://peps.python.org/pep-0008/)
+- [PEP 257 – Docstring Conventions | peps.python.org](https://peps.python.org/pep-0257/)
 
 ### Optional Content
 - Materials in OCW Course topic 1
