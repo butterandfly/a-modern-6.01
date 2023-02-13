@@ -38,3 +38,24 @@ Python exercises on Exercism:
 
 ### Optional Content
 - Materials in OCW Course topic 1
+
+## Week 02
+This is a gap week. Before continue any 6.01 content, we focus on Python first.
+
+### Python Tutorial
+Content in *PYTHON CRASH COURSE*:
+- Chapter 8: Functions
+- Chapter 9: Classes
+- Chapter 3: Introducing Lists
+- Chapter 4: Working with Lists
+
+Content in [python for everybody](https://www.freecodecamp.org/learn/scientific-computing-with-python/#python-for-everybody):
+- Regualr Expressions
+- Regular Expressions: Matching and Extracting Data
+- Regular Expressions: Practical Applications
+
+### Homework
+12 Python exercises on Exercism.
+
+### Design Lab
+Coming soon.
