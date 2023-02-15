@@ -58,4 +58,17 @@ Content in [python for everybody](https://www.freecodecamp.org/learn/scientific-
 12 Python exercises on Exercism.
 
 ### Design Lab
-Coming soon.
+Build a simplified Pokemon game *Pokemon: A Terminal Quest*.
+
+In this week, you need to build the 0.1 version of *Pokemon: A Terminal Quest*, which should include these features:
+- Only two pokemons, which are up to you.
+- Only two moves total, one move for one pokemon.
+- Design a simplified battle machenism.
+- In this version, there is nothing the gamer can controll.
+- Complete the gaming progress below.
+
+Gaming progress:
+1. Game starts.
+2. The two pokemon battle.
+3. Show the information for each turn and the battle result.
+4. End the game.
