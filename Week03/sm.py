@@ -2,11 +2,12 @@ from abc import ABC, abstractmethod
 
 class StateMachine(ABC):
     start_state = None
+    state = None
 
     def start(self):
         """To start the state machine.
         """        
-        # TODO: set the current state as the start state
+        # Set the current state as the start state
         self.state = self.start_state
 
     @abstractmethod
@@ -32,15 +33,15 @@ class StateMachine(ABC):
         Returns:
             _type_: the output calculated by the input and current state
         """
-        # TODO: calculate the new state and output by the getNextValue() function
+        # Calculate the new state and output by the getNextValue() function
         state, output = self.get_next_values(self.state, input)
 
-        # TODO: set the current state of this instance as the new state, then return the output
-        self.step = state
+        # Set the current state of this instance as the new state, then return the output
+        self.state = state
         return output
 
-    def trnasduce(self, inputs):
-        """Step all the inputs.
+    def transduce(self, inputs, verbose=False):
+        """Start from the start state, step all inputs.
 
         Args:
             inputs (List): the input list
@@ -48,9 +49,19 @@ class StateMachine(ABC):
         Returns:
             List: the output list
         """
-        # TODO: step all the inputs, and return all outputs respectively
+        self.start()
+
+        # Print the beginning state if verbose is True
+        if verbose:
+            print(f'Start at: {self.state}')
+
+        # step all the inputs, and return all outputs respectively
         outputs = []
         for input in inputs:
+            oldsate = self.state
             output = self.step(input)
             outputs.append(output)
+            # Print information if verbose is True
+            if verbose:
+                print(f'Current state: {oldsate}, input: {input}, output: {output}, new state: {self.state}')
         return outputs

@@ -3,21 +3,37 @@ import sm
 class TestSM(sm.StateMachine):
     start_state = 0
     def get_next_values(self, state, input):
-        return (0, True)
+        if state == 0:
+            return (1, True)
+        else:
+            return (0, True)
 
 
 def test_start():
     tsm = TestSM()
     tsm.start()
     assert tsm.state == 0
-    #    f"the state after start() is 0 expected, got: {state0}"
 
 def test_step():
     tsm = TestSM()
     tsm.start()
 
     output = tsm.step('a')
-    assert tsm.state == 0
-        #f"the state after step('a') is 0 expected, got: {tsm.state}"
+    assert tsm.state == 1
     assert output == True
-        # f"the output of step('a') is True expected, got: {output}"
+
+def test_transduce():
+    tsm = TestSM()
+    tsm.start()
+
+    outputs = tsm.transduce(['a', 'b', 'c'])
+    assert tsm.state == 1
+    assert outputs == [True, True, True]
+
+def test_transduce_verbose():
+    tsm = TestSM()
+    tsm.start()
+
+    outputs = tsm.transduce(['a', 'b', 'c'], verbose=True)
+    assert tsm.state == 1
+    assert outputs == [True, True, True]

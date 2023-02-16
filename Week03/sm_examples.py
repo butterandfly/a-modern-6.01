@@ -1,7 +1,7 @@
 from sm import StateMachine
 
 class ABCAcceptor(StateMachine):
-    startState = 0
+    start_state = 0
     def get_next_values(self, state, inp):
         if state == 0 and inp == 'a':
             return (1, True)
@@ -11,11 +11,26 @@ class ABCAcceptor(StateMachine):
             return (0, True)
         else:
             return (3, False)
-
-def show_examples():
+  
+def ABCAcceptor_example():
     abc_acceptor = ABCAcceptor()
-    abc_acceptor.start()
-    for output in abc_acceptor.trnasduce(['a', 'b', 'c']):
-        print(output)
+    abc_acceptor.transduce(['a', 'b', 'c'], verbose=True)
+    abc_acceptor.transduce(['a', 'a', 'a'], verbose=True)
 
-show_examples()
+class UpDown(StateMachine):
+    start_state = 0
+    def get_next_values(self, state, inp):
+        if inp == 'u':
+            new_state = state + 1
+            return (new_state, new_state)
+        else:
+            new_state = state - 1
+            return (new_state, new_state)
+
+def UpDown_example():
+    up_down = UpDown()
+    up_down.transduce(['u', 'u', 'd'], verbose=True)
+ 
+
+ABCAcceptor_example()
+UpDown_example()
