@@ -65,3 +65,18 @@ class StateMachine(ABC):
             if verbose:
                 print(f'Current state: {oldsate}, input: {input}, output: {output}, new state: {self.state}')
         return outputs
+
+class Parallel(StateMachine):
+    def __init__(self, *args):
+        self.machines = args
+        self.start_state = tuple([machine.start_state for machine in self.machines])
+
+    def get_next_values(self, state, input):
+        new_states = []
+        outputs = []
+        for i in range(len(self.machines)):
+            machine = self.machines[i]
+            new_state, output = machine.get_next_values(state[i], input)
+            new_states.append(new_state)
+            outputs.append(output)
+        return (tuple(new_states), tuple(outputs))
