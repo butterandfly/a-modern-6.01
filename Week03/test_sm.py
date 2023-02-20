@@ -1,6 +1,6 @@
 import sm
 
-class TestSM(sm.StateMachine):
+class SimpleSM(sm.StateMachine):
     start_state = 0
     def get_next_values(self, state, input):
         if state == 0:
@@ -8,32 +8,54 @@ class TestSM(sm.StateMachine):
         else:
             return (0, True)
 
+class TestStateMachine:
+    def test_start(self):
+        tsm = SimpleSM()
+        tsm.start()
+        assert tsm.state == 0
 
-def test_start():
-    tsm = TestSM()
-    tsm.start()
-    assert tsm.state == 0
+    def test_step(self):
+        tsm = SimpleSM()
+        tsm.start()
 
-def test_step():
-    tsm = TestSM()
-    tsm.start()
+        output = tsm.step('a')
+        assert tsm.state == 1
+        assert output == True
 
-    output = tsm.step('a')
-    assert tsm.state == 1
-    assert output == True
+    def test_transduce(self):
+        tsm = SimpleSM()
+        tsm.start()
 
-def test_transduce():
-    tsm = TestSM()
-    tsm.start()
+        outputs = tsm.transduce(['a', 'b', 'c'])
+        assert tsm.state == 1
+        assert outputs == [True, True, True]
 
-    outputs = tsm.transduce(['a', 'b', 'c'])
-    assert tsm.state == 1
-    assert outputs == [True, True, True]
+    def test_transduce_verbose(self):
+        tsm = SimpleSM()
+        tsm.start()
 
-def test_transduce_verbose():
-    tsm = TestSM()
-    tsm.start()
+        outputs = tsm.transduce(['a', 'b', 'c'], verbose=True)
+        assert tsm.state == 1
+        assert outputs == [True, True, True]
 
-    outputs = tsm.transduce(['a', 'b', 'c'], verbose=True)
-    assert tsm.state == 1
-    assert outputs == [True, True, True]
+class TestParallel:
+    def test_init(self):
+        sm1 = SimpleSM()
+        sm2 = SimpleSM()
+        
+        psm = sm.Parallel(sm1, sm2)
+
+        assert len(psm.machines) == 2
+        assert psm.machines[0] == sm1
+        assert psm.machines[1] == sm2
+        assert psm.start_state == (0, 0)
+
+    def test_get_next_values(self):
+        sm1 = SimpleSM()
+        sm2 = SimpleSM()
+        
+        psm = sm.Parallel(sm1, sm2)
+
+        next_state, output = psm.get_next_values((0, 0), ('a', 'b'))
+        assert next_state == (1, 1)
+        assert output == (True, True)
