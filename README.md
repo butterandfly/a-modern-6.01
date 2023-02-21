@@ -72,3 +72,32 @@ Gaming progress:
 2. The two pokemon battle.
 3. Show the information for each turn and the battle result.
 4. End the game.
+
+## Week 03
+
+### Lecture Contents
+- Lecture Video: https://www.youtube.com/watch?v=cQntMUMQyRw
+- Textbook chapter 4.1
+
+### Python Tutorial
+- [OOP Class Inheritance and Private Class Members - Python for Beginners!](https://www.youtube.com/watch?v=6c6NYPjO_rI)
+
+### Homework
+1) Finish textbook chapter 4.2
+
+2) Write the following classes by your self:
+- StateMaching
+- UpDown
+- Delay
+- Average2
+- SumLast3
+- SimpleParkingGate
+There are some example code in the folder `week03`, feel free to have a check.
+
+3)Four exercises on Exercism
+
+### Design Lab
+Write the following state machines:
+- Double delay
+- Finding Comments
+- Finding first word
