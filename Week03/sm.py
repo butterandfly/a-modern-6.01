@@ -80,3 +80,39 @@ class Parallel(StateMachine):
             new_states.append(new_state)
             outputs.append(output)
         return (tuple(new_states), tuple(outputs))
+
+class Cascade(StateMachine):
+    def __init__(self, *args):
+        self.machines = args
+        self.start_state = tuple([machine.start_state for machine in self.machines])
+
+    def get_next_values(self, state, input):
+        current_input = input
+        new_state = ()
+        for i in range(len(self.machines)):
+            machine = self.machines[i]
+            new_state_i, current_input = machine.get_next_values(state[i], current_input)
+            new_state = new_state + (new_state_i,)
+        return (new_state, current_input)
+
+class SimpleFeedback(StateMachine):
+    def __init__(self, machine, first_input):
+        super.__init__()
+        self.machine = machine
+        self.start_state = machine.start_state
+        self.first_input = first_input
+
+    def get_next_values(self, state, input):
+        new_state, output = self.machine.get_next_values(state, input)
+        return (new_state, output)
+
+    def run(self, steps):
+        self.start()
+        outputs = []
+
+        output = self.step(self.first_input)
+        outputs.append(output)
+        for i in range(steps - 1):
+            output = self.step(output)
+            outputs.append(output)
+        return output

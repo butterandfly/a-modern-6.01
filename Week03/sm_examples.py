@@ -88,6 +88,21 @@ class SimpleParkingGate(StateMachine):
 
         return (next_state, self.generate_output(next_state))
 
+def safe_add(x, y):
+    if x == 'undefined' or y == 'undefined':
+        return 'undefined'
+    else:
+        return x + y
+
+class Increment(StateMachine):
+    def __init__(self, incr) -> None:
+        super().__init__()
+        self.incr = incr
+
+    def get_next_values(self, state, inp):
+        output = safe_add(inp, self.incr)
+        return (output, output)
+
 ABCAcceptor_example()
 UpDown_example()
 Delay_example()
