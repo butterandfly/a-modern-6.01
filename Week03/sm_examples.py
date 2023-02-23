@@ -1,4 +1,4 @@
-from sm import StateMachine
+from lib.sm import StateMachine
 
 class ABCAcceptor(StateMachine):
     start_state = 0

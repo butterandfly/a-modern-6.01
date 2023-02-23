@@ -68,6 +68,7 @@ class StateMachine(ABC):
 
 class Parallel(StateMachine):
     def __init__(self, *args):
+        super().__init__()
         self.machines = args
         self.start_state = tuple([machine.start_state for machine in self.machines])
 
@@ -83,6 +84,7 @@ class Parallel(StateMachine):
 
 class Cascade(StateMachine):
     def __init__(self, *args):
+        super().__init__()
         self.machines = args
         self.start_state = tuple([machine.start_state for machine in self.machines])
 
@@ -97,7 +99,7 @@ class Cascade(StateMachine):
 
 class SimpleFeedback(StateMachine):
     def __init__(self, machine, first_input):
-        super.__init__()
+        super().__init__()
         self.machine = machine
         self.start_state = machine.start_state
         self.first_input = first_input
@@ -106,13 +108,40 @@ class SimpleFeedback(StateMachine):
         new_state, output = self.machine.get_next_values(state, input)
         return (new_state, output)
 
-    def run(self, steps):
+    def run(self, n=10, verbose=False):
         self.start()
         outputs = []
 
-        output = self.step(self.first_input)
-        outputs.append(output)
-        for i in range(steps - 1):
-            output = self.step(output)
+        current_input = self.first_input
+        output = None
+        for i in range(n):
+            pre_state = self.state
+            output = self.step(current_input)
             outputs.append(output)
-        return output
+            if verbose:
+                print(f'Step {i}')
+                print(f'  {self.__class__.__name__}:')
+                print(f'  Input: {current_input}, state: {pre_state} -> {self.state}, output: {output}')
+
+            current_input = output
+        return outputs
+
+class Delay0(StateMachine):
+    start_state = 0
+
+    def get_next_values(self, _, input):
+        return (input, input)
+
+class Delay1(StateMachine):
+    def __init__(self, start_state):
+        super().__init__()
+        self.start_state = start_state
+
+    def get_next_values(self, state, input):
+        return (input, state)
+
+class Adder(StateMachine):
+    start_state = 0
+
+    def get_next_values(self, state, input):
+        return (state, input[0] + input[1])

@@ -86,3 +86,56 @@ class TestCascade:
         next_state, output = csm.get_next_values((0, 0), 17)
         assert next_state == (18, 19)
         assert output == 19
+
+# Test the SimpleFeeback class
+class TestSimpleFeedback:
+    def test_init(self):
+        plus_one = PlusOne()
+        feedback = sm.SimpleFeedback(plus_one, 100)
+
+        assert feedback.machine == plus_one
+        assert feedback.start_state == 0
+        assert feedback.first_input == 100
+
+    def test_get_next_values(self):
+        plus_one = PlusOne()
+        feedback = sm.SimpleFeedback(plus_one, 100)
+
+        next_state, output = feedback.get_next_values(0, 10)
+        assert next_state == 11
+        assert output == 11
+
+        next_state, output = feedback.get_next_values(11, 10)
+        assert next_state == 11
+        assert output == 11
+
+    def test_run(self):
+        plus_one = PlusOne()
+        feedback = sm.SimpleFeedback(plus_one, 100)
+
+        outputs = feedback.run(n=3)
+        assert outputs == [101, 102, 103]
+
+class TestDelay0:
+    def test_get_next_values(self):
+        delay = sm.Delay0()
+        next_state, output = delay.get_next_values(0, 7)
+        assert next_state == 7
+        assert output == 7
+
+class TestDelay1:
+    def test_init(self):
+        delay = sm.Delay1(7)
+        assert delay.start_state == 7
+
+    def test_get_next_values(self):
+        delay = sm.Delay1(7)
+        next_state, output = delay.get_next_values(7, 14)
+        assert next_state == 14
+        assert output == 7
+
+class TestAdder:
+    def test_get_next_values(self):
+        adder = sm.Adder()
+        _, output = adder.get_next_values(0, (1, 2))
+        assert output == 3
