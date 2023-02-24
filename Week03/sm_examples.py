@@ -1,4 +1,7 @@
-from lib.sm import StateMachine
+import sys
+sys.path.insert(1, '../lib')
+
+from sm import StateMachine
 
 class ABCAcceptor(StateMachine):
     start_state = 0

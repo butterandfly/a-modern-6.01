@@ -126,7 +126,37 @@ class SimpleFeedback(StateMachine):
             current_input = output
         return outputs
 
-class Delay0(StateMachine):
+# A class like SimpleFeedback, but the input is a tuple
+class SimpleFeedback2(StateMachine):
+    def __init__(self, machine, first_input_tuple):
+        super().__init__()
+        self.machine = machine
+        self.start_state = machine.start_state
+        self.first_input = first_input_tuple
+
+    def get_next_values(self, state, input):
+        new_state, output = self.machine.get_next_values(state, input)
+        return (new_state, output)
+
+    def run(self, n=10, verbose=False):
+        self.start()
+        outputs = []
+
+        current_input = self.first_input
+        output = None
+        for i in range(n):
+            pre_state = self.state
+            output = self.step(current_input)
+            outputs.append(output)
+            if verbose:
+                print(f'Step {i}')
+                print(f'  {self.__class__.__name__}:')
+                print(f'  Input: {current_input}, state: {pre_state} -> {self.state}, output: {output}')
+
+            current_input = output
+        return outputs
+
+class Wire(StateMachine):
     start_state = 0
 
     def get_next_values(self, _, input):
@@ -145,3 +175,13 @@ class Adder(StateMachine):
 
     def get_next_values(self, state, input):
         return (state, input[0] + input[1])
+
+class FeedbackAdd(StateMachine):
+    start_state = 0
+    def __init__(self, sm1, sm2):
+        super().__init__()
+        self.sm1 = sm1
+        self.sm2 = sm2
+
+    def get_next_values(self, state, input):
+        return (state + input, state + input)
