@@ -13,6 +13,11 @@ class PlusOne(sm.StateMachine):
     def get_next_values(self, state, input):
         return (input + 1, input + 1)
 
+class Add(sm.StateMachine):
+    start_state = 0
+    def get_next_values(self, state, input):
+        return (input[0] + input[1], input[0] + input[1])
+
 class TestStateMachine:
     def test_start(self):
         tsm = SimpleSM()
@@ -72,9 +77,8 @@ class TestCascade:
         
         csm = sm.Cascade(sm1, sm2)
 
-        assert len(csm.machines) == 2
-        assert csm.machines[0] == sm1
-        assert csm.machines[1] == sm2
+        assert csm.sm1 == sm1
+        assert csm.sm2 == sm2
         assert csm.start_state == (0, 0)
 
     def test_get_next_values(self):
@@ -87,6 +91,15 @@ class TestCascade:
         assert next_state == (18, 19)
         assert output == 19
 
+    def test_run(self):
+        sm1 = sm.SimpleFeedback(PlusOne(), 0)
+        sm2 = PlusOne()
+        
+        csm = sm.Cascade(sm1, sm2)
+
+        outputs = csm.run(3)
+        assert outputs == [2, 3, 4]
+
 # Test the SimpleFeeback class
 class TestSimpleFeedback:
     def test_init(self):
@@ -95,7 +108,7 @@ class TestSimpleFeedback:
 
         assert feedback.machine == plus_one
         assert feedback.start_state == 0
-        assert feedback.first_input == 100
+        assert feedback.first_feedback == 100
 
     def test_get_next_values(self):
         plus_one = PlusOne()
@@ -139,3 +152,24 @@ class TestAdder:
         adder = sm.Adder()
         _, output = adder.get_next_values(0, (1, 2))
         assert output == 3
+
+class TestSimpleFeedback2:
+    def test_init(self):
+        add = Add()
+        feedback = sm.SimpleFeedback2(add, 0)
+
+        assert feedback.machine == add
+        assert feedback.start_state == 0
+        assert feedback.first_feedback == 0
+
+    def test_get_next_values(self):
+        add = Add()
+        feedback = sm.SimpleFeedback2(add, 0)
+
+        assert feedback.get_next_values(0, (1, 2)) == (3, 3)
+
+class TestMultiplier:
+    def test_get_next_values(self):
+        mult = sm.Multiplier()
+        _, output = mult.get_next_values(0, (3, 4))
+        assert output == 12
