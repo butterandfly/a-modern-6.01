@@ -116,9 +116,9 @@ class TestSimpleFeedback:
         outputs = feedback.run(n=3)
         assert outputs == [101, 102, 103]
 
-class TestDelay0:
+class TestWire:
     def test_get_next_values(self):
-        delay = sm.Delay0()
+        delay = sm.Wire()
         next_state, output = delay.get_next_values(0, 7)
         assert next_state == 7
         assert output == 7
