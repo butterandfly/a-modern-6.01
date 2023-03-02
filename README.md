@@ -114,10 +114,13 @@ Write the following state machines:
 - Parallel
 - Feedback
 - Feedback2
+- Switch
+- Mux
 
 2) Create following state machines:
 - Fibonacci
 - Factorial
+- WallSim
 
 3) Four exercises on Exercism
 
