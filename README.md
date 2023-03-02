@@ -101,3 +101,25 @@ Write the following state machines:
 - Double delay
 - Finding Comments
 - Finding first word
+
+## Week 04
+
+### Lecture Contents
+- Textbook chapter 4.2
+
+### Homework
+1) Write / update following classes:
+- StateMaching
+- Cascade
+- Parallel
+- Feedback
+- Feedback2
+
+2) Create following state machines:
+- Fibonacci
+- Factorial
+
+3) Four exercises on Exercism
+
+### Design Lab
+Coming soon...

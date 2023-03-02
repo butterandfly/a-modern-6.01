@@ -63,8 +63,13 @@ class StateMachine(ABC):
             outputs.append(output)
             # Print information if verbose is True
             if verbose:
-                print(f'Current state: {oldsate}, input: {input}, output: {output}, new state: {self.state}')
+                print(f'Input: {input}, state: {oldsate} -> {self.state}, output: {output}')
         return outputs
+
+    def run(self, n=10, verbose=False):
+        inputs = ['undefined'] * n
+        return self.transduce(inputs, verbose)
+
 
 class Parallel(StateMachine):
     def __init__(self, *args):
@@ -94,83 +99,40 @@ class Cascade(StateMachine):
         s2, o2 = self.sm2.get_next_values(state[1], o1)
         return ((s1, s2), o2)
 
-    def run(self, n=10, verbose=False):
-        assert self.sm1.__class__.__name__ == 'SimpleFeedback'
-
-        self.start()
-        outputs = []
-        current_input = self.sm1.first_feedback
-        for i in range(n):
-            pre_state = self.state
-            output = self.step(current_input)
-            outputs.append(output)
-            if verbose:
-                print(f'Step {i}')
-                print(f'  {self.__class__.__name__}:')
-                print(f'  Input: {current_input}, state: {pre_state} -> {self.state}, output: {output}')
-            current_input = self.sm1.get_next_values(pre_state[0], current_input)[1]
-
-        return outputs
-
-
-class SimpleFeedback(StateMachine):
-    def __init__(self, machine, first_feedback):
+class Feedback(StateMachine):
+    def __init__(self, sm):
         super().__init__()
-        self.machine = machine
-        self.start_state = machine.start_state
-        self.first_feedback = first_feedback
+        self.sm = sm
+        self.start_state = sm.start_state
 
     def get_next_values(self, state, input):
-        new_state, output = self.machine.get_next_values(state, input)
+        _, output = self.sm.get_next_values(state, 'undefined')
+        new_state, _ = self.sm.get_next_values(state, output)
         return (new_state, output)
 
-    def run(self, n=10, verbose=False):
-        self.start()
-        outputs = []
-
-        current_input = self.first_feedback
-        output = None
-        for i in range(n):
-            pre_state = self.state
-            output = self.step(current_input)
-            outputs.append(output)
-            if verbose:
-                print(f'Step {i}')
-                print(f'  {self.__class__.__name__}:')
-                print(f'  Input: {current_input}, state: {pre_state} -> {self.state}, output: {output}')
-
-            current_input = output
-        return outputs
-
-# A class like SimpleFeedback, but the input is a tuple
-class SimpleFeedback2(StateMachine):
-    def __init__(self, machine, first_feedback):
+class Feedback2(StateMachine):
+    def __init__(self, sm):
         super().__init__()
-        self.machine = machine
-        self.start_state = machine.start_state
-        self.first_feedback = first_feedback
+        self.sm = sm
+        self.start_state = sm.start_state
 
     def get_next_values(self, state, input):
-        new_state, output = self.machine.get_next_values(state, input)
+        _, output = self.sm.get_next_values(state, (input, 'undefined'))
+        new_state, _ = self.sm.get_next_values(state, (input, output))
         return (new_state, output)
 
-    def transduce(self, inputs, verbose=False):
-        self.start()
+class FeedbackAdd(StateMachine):
+    def __init__(self, sm1, sm2):
+        super().__init__()
+        self.sm1 = sm1
+        self.sm2 = sm2
+        self.start_state = (sm1.start_state, sm2.start_state)
 
-        if verbose:
-            print(f'Start at: {self.state}')
-
-        last_feedback = self.first_feedback
-        outputs = []
-        for input in inputs:
-            oldsate = self.state
-            output = self.step((input, last_feedback))
-            outputs.append(output)
-            last_feedback = output
-            # Print information if verbose is True
-            if verbose:
-                print(f'Input: {input}, state: {oldsate} -> {self.state}, output: {output}')
-        return outputs
+    def get_next_values(self, state, input):
+        _, o1 = self.sm1.get_next_values(state[0], 'undefined')
+        s2, o2 = self.sm2.get_next_values(state[1], o1)
+        s1, output = self.sm1.get_next_values(state[0], (input+o2))
+        return ((s1, s2), output)
 
 class Wire(StateMachine):
     start_state = 0
@@ -178,7 +140,7 @@ class Wire(StateMachine):
     def get_next_values(self, _, input):
         return (input, input)
 
-class Delay1(StateMachine):
+class Delay(StateMachine):
     def __init__(self, start_state):
         super().__init__()
         self.start_state = start_state
@@ -189,27 +151,34 @@ class Delay1(StateMachine):
 class Increment(StateMachine):
     start_state = 0
 
-    def get_next_values(self, state, input):
-        return (state + 1, state + 1)
+    def __init__(self, step=1):
+        super().__init__()
+        self.step = step
+
+    def get_next_values(self, _, input):
+        if input == 'undefined':
+            return ('undefined', 'undefined')
+        output = input + self.step
+        return (output, output)
 
 class Adder(StateMachine):
     start_state = 0
 
     def get_next_values(self, state, input):
-        return (state, input[0] + input[1])
+        if 'undefined' in input:
+            return ('undefined', 'undefined')
 
-class FeedbackAdd(StateMachine):
-    start_state = 0
-    def __init__(self, sm1, sm2):
-        super().__init__()
-        self.sm1 = sm1
-        self.sm2 = sm2
-
-    def get_next_values(self, state, input):
-        return (state + input, state + input)
+        output = input[0] + input[1]
+        return (output, output)
 
 class Multiplier(StateMachine):
     start_state = 1
     def get_next_values(self, _, input):
+        if 'undefined' in input:
+            return ('undefined', 'undefined')
+
         output = input[0] * input[1]
         return (output, output)
+
+def make_counter(start_number, step=1):
+    return Feedback(Cascade(Increment(step), Delay(start_number)))

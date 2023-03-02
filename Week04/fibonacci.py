@@ -1,9 +1,14 @@
 import sys
-sys.path.insert(1, '../lib')
+sys.path.insert(1, './lib')
 
-from sm import Wire, Delay1, Parallel, SimpleFeedback, Cascade, Adder
+from sm import Delay, Parallel, Feedback, Cascade, Adder
 
-fibonacci = SimpleFeedback(Cascade(Parallel(Wire(), Delay1(0)), Adder()), 1)
+fibonacci = Feedback(
+    Cascade(
+        Parallel(Delay(1), Cascade(Delay(1), Delay(0))), 
+        Adder()))
 results = fibonacci.run(10, verbose=True)
+
+print()
 print('Fibonacci numbers:')
 print(results)

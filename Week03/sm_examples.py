@@ -1,5 +1,5 @@
 import sys
-sys.path.insert(1, '../lib')
+sys.path.insert(1, './lib')
 
 from sm import StateMachine
 
@@ -34,17 +34,6 @@ def UpDown_example():
     up_down = UpDown()
     up_down.transduce(['u', 'u', 'd'], verbose=True)
  
-class Delay(StateMachine):
-    def __init__(self, start_state):
-        self.start_state = start_state
-
-    def get_next_values(self, state, inp):
-        return (inp, state)
-
-def Delay_example():
-    delay = Delay(0)
-    delay.transduce([1, 2, 3], verbose=True)
-
 class Average2(StateMachine):
     start_state = 0
     def get_next_values(self, state, inp):
@@ -91,23 +80,7 @@ class SimpleParkingGate(StateMachine):
 
         return (next_state, self.generate_output(next_state))
 
-def safe_add(x, y):
-    if x == 'undefined' or y == 'undefined':
-        return 'undefined'
-    else:
-        return x + y
-
-class Increment(StateMachine):
-    def __init__(self, incr) -> None:
-        super().__init__()
-        self.incr = incr
-
-    def get_next_values(self, state, inp):
-        output = safe_add(inp, self.incr)
-        return (output, output)
-
 ABCAcceptor_example()
 UpDown_example()
-Delay_example()
 Average2_example()
 SumLast3_example()

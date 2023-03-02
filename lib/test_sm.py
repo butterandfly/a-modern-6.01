@@ -91,43 +91,41 @@ class TestCascade:
         assert next_state == (18, 19)
         assert output == 19
 
-    def test_run(self):
-        sm1 = sm.SimpleFeedback(PlusOne(), 0)
-        sm2 = PlusOne()
+    # def test_run(self):
+    #     sm1 = sm.SimpleFeedback(PlusOne(), 0)
+    #     sm2 = PlusOne()
         
-        csm = sm.Cascade(sm1, sm2)
+    #     csm = sm.Cascade(sm1, sm2)
 
-        outputs = csm.run(3)
-        assert outputs == [2, 3, 4]
+    #     outputs = csm.run(3)
+    #     assert outputs == [2, 3, 4]
 
-# Test the SimpleFeeback class
-class TestSimpleFeedback:
+class TestFeedback:
+    def make_counter(self):
+        inc = sm.Increment()
+        delay = sm.Delay(0)
+        cas = sm.Cascade(inc, delay)
+        feedback = sm.Feedback(cas)
+        return feedback
+
     def test_init(self):
-        plus_one = PlusOne()
-        feedback = sm.SimpleFeedback(plus_one, 100)
+        feedback = self.make_counter()
 
-        assert feedback.machine == plus_one
-        assert feedback.start_state == 0
-        assert feedback.first_feedback == 100
+        assert feedback.sm.__class__.__name__ == 'Cascade'
+        assert feedback.start_state == (0, 0)
 
     def test_get_next_values(self):
-        plus_one = PlusOne()
-        feedback = sm.SimpleFeedback(plus_one, 100)
+        feedback = self.make_counter()
 
-        next_state, output = feedback.get_next_values(0, 10)
-        assert next_state == 11
-        assert output == 11
-
-        next_state, output = feedback.get_next_values(11, 10)
-        assert next_state == 11
-        assert output == 11
+        next_state, output = feedback.get_next_values((0, 0), None)
+        assert next_state == (1, 1)
+        assert output == 0
 
     def test_run(self):
-        plus_one = PlusOne()
-        feedback = sm.SimpleFeedback(plus_one, 100)
+        feedback = self.make_counter()
 
         outputs = feedback.run(n=3)
-        assert outputs == [101, 102, 103]
+        assert outputs == [0, 1, 2]
 
 class TestWire:
     def test_get_next_values(self):
@@ -136,16 +134,45 @@ class TestWire:
         assert next_state == 7
         assert output == 7
 
-class TestDelay1:
+class TestDelay:
     def test_init(self):
-        delay = sm.Delay1(7)
+        delay = sm.Delay(7)
         assert delay.start_state == 7
 
     def test_get_next_values(self):
-        delay = sm.Delay1(7)
+        delay = sm.Delay(7)
         next_state, output = delay.get_next_values(7, 14)
         assert next_state == 14
         assert output == 7
+
+class TestFeedback2:
+    def makeAccumulate(self):
+        adder = sm.Adder()
+        delay = sm.Delay(0)
+        cas = sm.Cascade(adder, delay)
+        feedback = sm.Feedback2(cas)
+        return feedback
+
+    def test_init(self):
+        feedback = self.makeAccumulate()
+
+        assert feedback.sm.__class__.__name__ == 'Cascade'
+        assert feedback.start_state == (0, 0)
+
+    def test_get_next_values(self):
+        feedback = self.makeAccumulate()
+
+        assert feedback.get_next_values((0, 0), 1) == ((1, 1), 0)
+
+    def test_transduce(self):
+        feedback = self.makeAccumulate()
+
+        assert feedback.transduce([1, 2, 3, 4]) == [0, 1, 3, 6]
+
+class TestFeedbackAdd:
+    def test_get_next_values(self):
+        feedback = sm.FeedbackAdd(sm.Delay(0), sm.Wire())
+        assert feedback.transduce([0, 1, 2, 3, 4]) == [0, 0, 1, 3, 6]
 
 class TestAdder:
     def test_get_next_values(self):
@@ -153,23 +180,27 @@ class TestAdder:
         _, output = adder.get_next_values(0, (1, 2))
         assert output == 3
 
-class TestSimpleFeedback2:
-    def test_init(self):
-        add = Add()
-        feedback = sm.SimpleFeedback2(add, 0)
-
-        assert feedback.machine == add
-        assert feedback.start_state == 0
-        assert feedback.first_feedback == 0
-
-    def test_get_next_values(self):
-        add = Add()
-        feedback = sm.SimpleFeedback2(add, 0)
-
-        assert feedback.get_next_values(0, (1, 2)) == (3, 3)
+        _, output = adder.get_next_values(0, (1, 'undefined'))
+        assert output == 'undefined'
 
 class TestMultiplier:
     def test_get_next_values(self):
         mult = sm.Multiplier()
         _, output = mult.get_next_values(0, (3, 4))
         assert output == 12
+
+class TestIncrement:
+    def test_get_next_values(self):
+        inc = sm.Increment()
+        state, output = inc.get_next_values(0, 7)
+        assert output == 8
+        assert state == 8
+
+        state, output = inc.get_next_values(0, 'undefined')
+        assert output == 'undefined'
+        assert state == 'undefined'
+
+class TestMakeCounter:
+    def test_make_counter(self):
+        counter = sm.make_counter(7, 1)
+        assert counter.run(3) == [7, 8, 9]
