@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from typing import Callable
 
 class StateMachine(ABC):
     start_state = None
@@ -179,6 +180,58 @@ class Multiplier(StateMachine):
 
         output = input[0] * input[1]
         return (output, output)
+
+class Switch(StateMachine):
+    def __init__(self, condition: Callable, sm1: StateMachine, sm2: StateMachine):
+        super().__init__()
+        self.sm1 = sm1
+        self.sm2 = sm2
+        self.condition = condition
+        self.start_state = (sm1.start_state, sm2.start_state)
+
+    def get_next_values(self, state, input):
+        if self.condition(input):
+            s1, o1 = self.sm1.get_next_values(state[0], input)
+            return ((s1, state[1]), o1)
+        else:
+            s2, o2 = self.sm2.get_next_values(state[1], input)
+            return ((state[0], s2), o2)
+
+class Mux(Switch):
+    def get_next_values(self, state, input):
+        s1, o1 = self.sm1.get_next_values(state[0], input)
+        s2, o2 = self.sm2.get_next_values(state[1], input)
+        if self.condition(input):
+            return ((s1, s2), o1)
+        else:
+            return ((s1, s2), o2)
+
+class If(StateMachine):
+    start_state = ('start', None)
+
+    def __init__(self, condition, sm1, sm2) -> None:
+        super().__init__()
+        self.condition = condition
+        self.sm1 = sm1
+        self.sm2 = sm2
+
+    def get_first_real_state(self, input):
+        if self.condition(input):
+            return ('running_sm1', self.sm1.start_state)
+        else:
+            return ('running_sm2', self.sm2.start_state)
+
+    def get_next_values(self, state, input):
+        if_state, sm_state = state
+        if if_state == 'start':
+            if_state, sm_state = self.get_first_real_state(input)
+        
+        if if_state == 'running_sm1':
+            new_sm_state, output = self.sm1.get_next_values(sm_state, input)
+        else:
+            new_sm_state, output = self.sm2.get_next_values(sm_state, input)
+
+        return ((if_state, new_sm_state), output)
 
 def make_counter(start_number, step=1):
     return Feedback(Cascade(Increment(step), Delay(start_number)))

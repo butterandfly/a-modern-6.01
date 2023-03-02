@@ -13,6 +13,11 @@ class PlusOne(sm.StateMachine):
     def get_next_values(self, state, input):
         return (input + 1, input + 1)
 
+class MinusOne(sm.StateMachine):
+    start_state = 0
+    def get_next_values(self, state, input):
+        return (input - 1, input - 1)
+
 class Add(sm.StateMachine):
     start_state = 0
     def get_next_values(self, state, input):
@@ -199,6 +204,38 @@ class TestIncrement:
         state, output = inc.get_next_values(0, 'undefined')
         assert output == 'undefined'
         assert state == 'undefined'
+
+class TestSwitch:
+    def test_init(self):
+        condition = lambda x: x > 0
+        switch = sm.Switch(condition, PlusOne(), MinusOne())
+        assert switch.start_state == (0, 0)
+        assert switch.condition == condition
+
+    def test_get_next_values(self):
+        condition = lambda x: x > 0
+        switch = sm.Switch(condition, PlusOne(), MinusOne())
+
+        next_state, output = switch.get_next_values((0, 0), 7)
+        assert next_state == (8, 0)
+        assert output == 8
+
+        next_state, output = switch.get_next_values((0, 0), -7)
+        assert next_state == (0, -8)
+        assert output == -8
+
+class TestMux:
+    def test_get_next_values(self):
+        condition = lambda x: x > 0
+        switch = sm.Mux(condition, PlusOne(), MinusOne())
+
+        next_state, output = switch.get_next_values((0, 0), 7)
+        assert next_state == (8, 6)
+        assert output == 8
+
+        next_state, output = switch.get_next_values((0, 0), -7)
+        assert next_state == (-6, -8)
+        assert output == -8
 
 class TestMakeCounter:
     def test_make_counter(self):
