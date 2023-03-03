@@ -241,3 +241,20 @@ class TestMakeCounter:
     def test_make_counter(self):
         counter = sm.make_counter(7, 1)
         assert counter.run(3) == [7, 8, 9]
+
+class TestParallelAdd:
+    def test_get_next_values(self):
+        p = sm.ParallelAdd(sm.Wire(), sm.Wire())
+        next_state, output = p.get_next_values((0, 0), 7)
+        assert next_state == (7, 7)
+        assert output == 14
+
+class TestGain:
+    def test_get_next_values(self):
+        g = sm.Gain(2)
+        next_state, output = g.get_next_values(0, 7)
+        assert next_state == 7
+        assert output == 14
+
+def test_R():
+    assert sm.R == sm.Delay

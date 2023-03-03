@@ -88,6 +88,18 @@ class Parallel(StateMachine):
             outputs.append(output)
         return (tuple(new_states), tuple(outputs))
 
+class ParallelAdd(StateMachine):
+    start_state: tuple
+    def __init__(self, sm1: StateMachine, sm2: StateMachine):
+        self.sm1 = sm1
+        self.sm2 = sm2
+        self.start_state = (sm1.start_state, sm2.start_state)
+
+    def get_next_values(self, state: tuple, input: any):
+        s1, o1 = self.sm1.get_next_values(state[0], input)
+        s2, o2 = self.sm2.get_next_values(state[1], input)
+        return ((s1, s2), o1 + o2)
+
 class Cascade(StateMachine):
     def __init__(self, sm1, sm2):
         super().__init__()
@@ -148,6 +160,14 @@ class Delay(StateMachine):
 
     def get_next_values(self, state, input):
         return (input, state)
+
+class Gain(StateMachine):
+    def __init__(self, gain):
+        super().__init__()
+        self.gain = gain
+
+    def get_next_values(self, _, input):
+        return (input, input * self.gain)
 
 class Increment(StateMachine):
     start_state = 0
@@ -235,3 +255,5 @@ class If(StateMachine):
 
 def make_counter(start_number, step=1):
     return Feedback(Cascade(Increment(step), Delay(start_number)))
+
+R = Delay
