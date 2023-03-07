@@ -125,4 +125,24 @@ Write the following state machines:
 3) Four exercises on Exercism
 
 ### Design Lab
-Coming soon...
+There is no design lab content this week.
+
+## Week 05
+
+### Lecture Contents
+- Textbook chapter 5.1~5.4
+- Lecture video: https://www.youtube.com/watch?v=CG4ihzTaGdM
+
+### Homework
+1) Write following classes / functions:
+- LTISM
+- doc_product
+
+2) Finished following exercises from the reading:
+- 5.5
+- 5.6
+- 5.7
+
+### Design Lab
+- Solfware Lab problems 3.1.x
+- Additional Exercises problems 3.3.x

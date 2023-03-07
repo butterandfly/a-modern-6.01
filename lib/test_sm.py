@@ -256,5 +256,21 @@ class TestGain:
         assert next_state == 7
         assert output == 14
 
+class TestLTISM:
+    def test_init(self):
+        lti = sm.LTISM([1, 1], [0, 0])
+        assert lti.start_state == ([0], [0, 0])
+        assert lti.d_coeffs == [1, 1]
+        assert lti.c_coeffs == [0, 0]
+
+    def test_get_next_values(self):
+        lti = sm.LTISM([1, 1], [0, 0])
+        next_state, output = lti.get_next_values(([0], [0, 0]), 2)
+        assert next_state == ([2], [2, 0])
+        assert output == 2
+
+def test_dot_product():
+    assert sm.dot_product([1, 2, 3], [4, 5, 6]) == 32
+
 def test_R():
     assert sm.R == sm.Delay

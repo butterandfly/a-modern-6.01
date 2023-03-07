@@ -172,14 +172,14 @@ class Gain(StateMachine):
 class Increment(StateMachine):
     start_state = 0
 
-    def __init__(self, step=1):
+    def __init__(self, step_num=1):
         super().__init__()
-        self.step = step
+        self.step_num = step_num
 
     def get_next_values(self, _, input):
         if input == 'undefined':
             return ('undefined', 'undefined')
-        output = input + self.step
+        output = input + self.step_num
         return (output, output)
 
 class Adder(StateMachine):
@@ -252,6 +252,35 @@ class If(StateMachine):
             new_sm_state, output = self.sm2.get_next_values(sm_state, input)
 
         return ((if_state, new_sm_state), output)
+
+class LTISM(StateMachine):
+    def __init__(self, d_coeffs, c_coeffs):
+        """Create a LTI state machine.
+
+        Args:
+            d_coeffs (List): Coefficients of xs.
+            c_coeffs (_type_): Coefficients of ys.
+        """
+        super().__init__()
+        self.d_coeffs = d_coeffs
+        self.c_coeffs = c_coeffs
+
+        j = len(d_coeffs) - 1
+        k = len(c_coeffs)
+
+        self.start_state = ([0] * j, [0] * k)
+
+    def get_next_values(self, state, input):
+        inputs, outputs = state
+        inputs = [input] + inputs
+
+        output = dot_product(self.c_coeffs, outputs) + dot_product(self.d_coeffs, inputs)
+
+        return ((inputs[:-1], [output] + outputs[:-1]), output)
+
+
+def dot_product(xs, ys):
+    return sum(x * y for x, y in zip(xs, ys))
 
 def make_counter(start_number, step=1):
     return Feedback(Cascade(Increment(step), Delay(start_number)))
