@@ -146,3 +146,18 @@ There is no design lab content this week.
 ### Design Lab
 - Solfware Lab problems 3.1.x
 - Additional Exercises problems 3.3.x
+
+## Week 06
+
+### Lecture Contents
+- Textbook chapter 5.1~5.4
+- Software Lab 4 reading
+
+### Homework
+- Software Lab 4.1.1 ~ 4.1.4
+
+### About codes in Week06
+You need to install the matplotlib module:
+```bash
+pip install matplotlib
+```
