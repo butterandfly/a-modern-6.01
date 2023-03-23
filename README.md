@@ -161,3 +161,13 @@ You need to install the matplotlib module:
 ```bash
 pip install matplotlib
 ```
+
+## Week 07
+### Lecture Contents
+- Textbook chapter 5.5 ~ 5.7
+- Lecture video LEC 5: youtube.com/watch?v=qB5wq5L6EL4
+- Rec 7: https://www.youtube.com/watch?v=lF-7mmPHhG0
+- Rec 8: https://www.youtube.com/watch?v=QleELaAfTd4
+
+### Homework and Design Lab
+Coming soon...
