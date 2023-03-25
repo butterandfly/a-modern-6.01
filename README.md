@@ -170,4 +170,8 @@ pip install matplotlib
 - Rec 8: https://www.youtube.com/watch?v=QleELaAfTd4
 
 ### Homework and Design Lab
-Coming soon...
+- Polynomial Class
+- Software Lab 5.1.1 ~ 5.1.5
+- (Optional) Difference Equation Class
+
+Hint: you may need `numpy` module to implement the `Polynomial` class. Feel free to check codes in folder `Week07`, and search information about numpy.
