@@ -175,3 +175,15 @@ pip install matplotlib
 - (Optional) Difference Equation Class
 
 Hint: you may need `numpy` module to implement the `Polynomial` class. Feel free to check codes in folder `Week07`, and search information about numpy.
+
+## Week 08
+### Lecture Contents
+- Textbook 5.8
+- Lecture video LEC 6: https://www.youtube.com/watch?v=oTNwGuI7Wic
+- Prepare the midterm test
+
+### Homework and Design Lab
+- Based on the textbook and lecture video, you are required to write an analysis paper on the wall finder system function. The paper should be written in the IPython notebook (Jupyter Notebook) format.
+
+### Hint: about `.ipynb` file
+It's a format for Jupyter Notebook, and it can be shown on Github. Google it for more information.
